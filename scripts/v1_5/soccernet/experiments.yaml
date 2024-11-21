@@ -1,0 +1,91 @@
+environment:
+  image: harbor.bk8s/library/mamba:v2
+  pod_spec:
+    spec:
+      hostIPC: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    # - 10.60.0.20
+                    # - 10.60.0.21
+                    # - 10.60.0.22
+                    # - 10.60.0.23
+                    # - 10.60.0.24
+                    # - 10.60.0.25
+                      - 10.60.0.2
+                      - 10.60.0.16
+                      - 10.60.0.17
+                      - 10.60.0.18
+                      - 10.60.0.19
+
+      containers:
+        - name: determined-container
+          env:
+            - name: http_proxy
+              value: http://10.60.0.29:7890
+            - name: https_proxy
+              value: http://10.60.0.29:7890
+            - name: HTTP_PROXY
+              value: http://10.60.0.29:7890
+            - name: HTTPS_PROXY
+              value: http://10.60.0.29:7890
+            - name: no_proxy
+              value: >-
+                localhost,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local,192.168.111.111
+            - name: NO_PROXY
+              value: >-
+                localhost,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,.svc,.cluster.local,192.168.111.111
+            # - name: NCCL_DEBUG
+              # value: INFO
+            - name: NCCL_SOCKET_IFNAME
+              value: eth0
+            - name: NCCL_IB_GID_INDEX
+              value: '3'
+            - name: NCCL_IB_QPS_PER_CONNECTION
+              value: '2'
+            - name: NCCL_IB_TIMEOUT
+              value: '22'
+          resources:
+            limits:
+              cpu: '64'
+              memory: 512Gi
+            requests:
+              cpu: '64'
+              memory: 512Gi
+          volumeMounts:
+            - mountPath: /data
+              name: env
+            - mountPath: /env
+              name: env
+            - mountPath: /opt/conda
+              name: env
+              subPath: base-envs/opt-conda-0612-new
+            - mountPath: /opt/conda/pkgs
+              name: env
+              subPath: pkgs
+          securityContext:
+            privileged: true
+      volumes:
+        - name: env
+          hostPath:
+            path: /pfs/mt-iBbrHk
+            type: Directory
+debug: true
+name: test
+searcher:
+  name: single
+  metric: validation_loss
+  max_length:
+    epochs: 1
+workspace: Shared Worker
+project: lx
+resources:
+  resource_pool: default # for multi-node, using training
+  slots_per_trial: 8
+  # slots: 0
+entrypoint: bash /data/codes/lixiang/Video-LLaVA-main/scripts/v1_5/soccernet/matchtime_finetune_video.sh
