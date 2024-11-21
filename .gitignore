@@ -1,0 +1,12 @@
+*.out
+*.egg-info
+cache_dir
+checkpoionts
+dataset
+.idea
+.vscode
+.conda
+.ipynb_checkpoints
+temp
+tower
+
