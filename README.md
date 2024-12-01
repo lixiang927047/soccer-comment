@@ -15,6 +15,7 @@ bash scripts/v1_5/soccernet/matchtime_finetune_video_audio.sh
   3.2. 使用官方eval程序进行测试
   (修改Predictions_path为之前跑结果的输出地址）
   ```bash
+  cd sn-caption/Evaluation/
   python EvaluateDenseVideoCaption.py --SoccerNet_path /root/codes/Video-LLaVA-main/dataset/soccernet_json/test_labels/
   --Predictions_path [/root/codes/Video-LLaVA-main/dataset/soccernet_json/test_results_1115_19900/]
   ```
